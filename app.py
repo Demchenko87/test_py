@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from flask import Flask, render_template, url_for, session,jsonify, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -75,11 +74,11 @@ def handle_cart():
 @app.route('/', methods=['POST', 'GET'])
 def index():
     push_date = datetime.today().strftime('%Y-%m-%d')
+    # if request.method == 'POST':
+    #     push_date = request.form['date']
+    #     return jsonify({'date': push_date})
     if request.method == 'POST':
         push_date = request.form['date']
-        return jsonify({'date': push_date})
-
-
     tables = Tables.query.all()
     count_cart = check_count()
     orders_table = Order.query.all()

@@ -2,60 +2,36 @@
 {% block title %}Hall layout{% endblock %}
 {% block content %}
 
-{##}
-{#    <form class="navbar-form navbar-right" role="search" method="get" action="{{ url_for('search') }}">#}
-{#        <div class="form-group">#}
-{#          <input type="date" class="form-control" id="datePicker" name="search" placeholder="Поиск столов" onchange="pushDate(); this.form.submit();">#}
-{#        </div>#}
-{##}
-{##}
-{#      </form>#}
-
 
 <h1><span id="UpdateValue">{{ push_date }}</span></h1>
-
+<form method="POST" action="{{ url_for('index') }}">
+      <div class="form-group">
+            <input type="date" class="form-control" onchange="this.form.submit();" name="date" value="{{ push_date }}"/>
+       </div>
+   </form>
 
 <form method="POST" action="{{ url_for('checkout') }}">
-      <div class="form-group">
-            <input type="date" class="form-control" onchange="pushDate()" id="datePicker" name="date"/>
-       </div>
+
+            <input type="hidden" onchange="pushDate()" name="date" value="{{ push_date }}"/>
+
     <button class="btn btn-success" type="submit">Заказать кол. <span id="successAlert">{{ count_cart }}</span> </button>
 </form>
 
 <h1>Зал 1</h1>
-{#{%  for i in orders_table %}#}
-{#    {% if i.date == search %}#}
-{#        {{ i.date }}#}
-{#        {% for item in i.items %}#}
-{#            <p>СТОЛ НОМЕР: {{ item.table.number_t }}</p>#}
-{#            <h3>ЗАНЯТ</h3>#}
-{#        {% endfor %}#}
-{#        {% else %}#}
-{#        {{ i.date }}#}
-{#        {% for item in i.items %}#}
-{#            <p>СТОЛ НОМЕР: {{ item.table.number_t }}</p>#}
-{#            <h3>СВОБОДЕН</h3>#}
-{#        {% endfor %}#}
-{#    {% endif %}#}
-{#{% endfor %}#}
-    {% for i in orders_table %}
-        <h2>fasf :{{ i.date }}</h2>
-    {% endfor %}
-
-
- {% for i in tables %}
-     <h5>СТОЛ № {{ i.number_t }}</h5>
-     {{ i.order }}
-     {% for item in i.order %}
-            <h5>Заказан на :{{ item.order.date }}</h5>
-         {% endfor %}
-{% endfor %}
     <div class="box">
     {% for tables in tables %}
-
     <div class="{{ tables.so }}" style="top: {{ tables.margin_top }}%; left:{{ tables.margin_left }}%; transform: rotate({{ tables.rotate }}deg);">
         <h5>№ {{ tables.number_t }}</h5>
-        <p>мест: {{ tables.quantity_chairs }}</p><p class="btn-danger" id="date{{ tables.id }}">{{ tables.date }}</p>
+        <p>мест: {{ tables.quantity_chairs }}</p>
+                {% for item in tables.order %}
+                     {% if item.order.date == push_date %}
+                        <p class="btn-danger" >БРОНЬ :{{ item.order.date }}</p>
+                         {% elif item.order.date %}
+<p class="btn-danger" >СВОБОДЕН</p>
+                     {% endif %}
+
+                 {% endfor %}
+
          <p>размер стола: {{ tables.with_tab }} на {{ tables.height_tab }} метра</p>
         <a href="{{ url_for('delete_table', id=tables.id) }}" title="Удалить" class="btn btn-danger">
         <i class="fas fa-trash-alt"></i></a>
