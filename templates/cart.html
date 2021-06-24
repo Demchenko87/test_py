@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Корзина заказа{% endblock %}
+{% block content %}
+<div class="row">
+
+   {% for tables in tables %}
+       <p>{{ tables['id'] }}</p>
+{% endfor %}
+</div>
+{% endblock %}
+
