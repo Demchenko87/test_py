@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Корзина заказа{% endblock %}
+{% block content %}
+<div class="row">
+{% for order in orders %}
+    <p>{{ order.id }}</p>
+    <p>{{ order.name }}</p>
+    <p>{{ order.address }}</p>
+    <p>{{ order.email }}</p>
+    <p>{{ order.date }}</p>
+    <a href="{{ url_for('order', order_id=order.id) }}">Подробнее</a>
+    <a href="{{ url_for('del_order', id=order.id) }}">Удалить</a>
+
+{% endfor %}
+</div>
+{% endblock %}
+

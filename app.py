@@ -22,10 +22,12 @@ class Tables(db.Model):
     margin_left = db.Column(db.Integer)
     rotate = db.Column(db.Integer)
     so = db.Column(db.String(50), nullable=True)
+    order = db.relationship('Order_Tables', backref='table', lazy=True)
 
 class AddTables(FlaskForm):
     number_t = StringField('number_t')
     quantity_chairs = StringField('quantity_chairs')
+    date = StringField('date')
     with_tab = StringField('with_tab')
     height_tab = StringField('height_tab')
     margin_top = StringField('margin_top')
@@ -69,11 +71,11 @@ def handle_cart():
                        })
     return tables
 
-@app.route('/')
+@app.route('/', methods=['POST', 'GET'])
 def index():
     tables = Tables.query.all()
     count_cart = check_count()
-    #session['cart'] = []
+
     return render_template('index.html', tables=tables, count_cart=count_cart)
 
 @app.route('/add-table', methods=['GET', 'POST'])
@@ -99,6 +101,7 @@ def edit_table(id):
     if request.method == 'POST':
         table.number_t = request.form['number_t']
         table.quantity_chairs = request.form['quantity_chairs']
+        table.date = request.form['date']
         table.with_tab = request.form['with_tab']
         table.height_tab = request.form['height_tab']
         table.margin_top = request.form['margin_top']
@@ -144,8 +147,6 @@ def quick_delete():
 def cart():
     count_cart = check_count()
     tables = handle_cart()
-    print(tables)
-    print(session['cart'])
     return render_template('cart.html', tables=tables, count_cart=count_cart)
 
 def check_count():
@@ -178,7 +179,22 @@ def checkout():
         return redirect(url_for('index'))
     return render_template('checkout.html', form=form, count_cart=count_cart, tables=tables)
 
+@app.route('/orders')
+def orders():
+    orders = Order.query.all()
+    return render_template('orders.html', orders=orders)
 
+@app.route('/orders/<order_id>', methods=['GET', 'POST'])
+def order(order_id):
+    order = Order.query.filter_by(id=int(order_id)).first()
+    return render_template('order-view.html', order=order)
+
+@app.route('/orders/delete/<int:id>', methods=['GET', 'POST'])
+def del_order(id):
+    order = Order.query.filter_by(id=id).first()
+    db.session.delete(order)
+    db.session.commit()
+    return redirect(url_for('index'))
 
 
 if __name__ == '__main__':

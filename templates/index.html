@@ -1,8 +1,16 @@
 {% extends 'base.html' %}
 {% block title %}Pricing example for Bootstrap{% endblock %}
 {% block content %}
-<h1><span id="successAlert"><a href="{{ url_for('cart') }}">{{ count_cart }}</a></span></h1>
 
+
+
+
+<form method="POST" action="{{ url_for('checkout') }}">
+      <div class="form-group">
+            <input type="date" class="form-control" id="datePicker" name="date"/>
+       </div>
+    <button class="btn btn-success" type="submit">Заказать кол. <span id="successAlert">{{ count_cart }}</span> </button>
+</form>
 <h1>Зал 1</h1>
 
     <div class="box">
@@ -10,7 +18,7 @@
 
     <div class="{{ tables.so }}" style="margin: {{ tables.margin_top }}% 0 0 {{ tables.margin_left }}%; transform: rotate({{ tables.rotate }}deg);">
         <h5>№ {{ tables.number_t }}</h5>
-        <p>мест: {{ tables.quantity_chairs }}</p><p class="btn-danger">Бронь</p>
+        <p>мест: {{ tables.quantity_chairs }}</p><p class="btn-danger" id="date{{ tables.id }}">{{ tables.date }}</p>
          <p>размер стола: {{ tables.with_tab }} на {{ tables.height_tab }} метра</p>
         <a href="{{ url_for('delete_table', id=tables.id) }}" title="Удалить" class="btn btn-danger">
         <i class="fas fa-trash-alt"></i></a>
@@ -24,9 +32,7 @@
     </div>
         {% endfor %}
 
-       <div class="form-group">
-            <input type="date" class="form-control" id="datePicker" name="date"/>
-       </div>
+
 
     </div>
 {% endblock %}

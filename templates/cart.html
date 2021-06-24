@@ -6,6 +6,11 @@
    {% for tables in tables %}
        <p>{{ tables['id'] }}</p>
 {% endfor %}
+{% if session['cart'] == [] %} {% else %}
+                 <a href="{{ url_for('checkout') }}" class="btn btn-primary btn-sm">
+					Оформить заказ <i class="glyphicon glyphicon-chevron-right"></i>
+				</a>
+                {% endif %}
 </div>
 {% endblock %}
 

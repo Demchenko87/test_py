@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Корзина заказа{% endblock %}
+{% block content %}
+<div class="row">
+{% for item in order.items %}
+    <p>{{ item.table_id }}</p>
+    <p>{{ item.table.number_t }}</p>
+    <p>{{ item.table.quantity_chairs }}</p>
+    <p>{{ item.table.date }}</p>
+    <p>{{ item.table.with_tab }}</p>
+    <p>{{ item.table.height_tab }}</p>
+    <p>{{ item.table.margin_top }}</p>
+    <p>{{ item.table.margin_left }}</p>
+    <p>{{ item.table.so }}</p>
+{% endfor %}
+</div>
+{% endblock %}
+

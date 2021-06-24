@@ -8,7 +8,7 @@
                            {{ form.csrf_token }}
 
                               <div class="form-group">
-                                 <label>NAme</label>
+                                 <label>Name</label>
                                  {{ form.name(class='form-control') }}
                               </div>
                                <div class="form-group">
@@ -19,10 +19,9 @@
                                  <label>email</label>
                                  {{ form.email(class='form-control', type='email') }}
                               </div>
-                             <div class="form-group">
-                                 <label>date</label>
-                                 {{ form.date(class='form-control', type='date') }}
-                              </div>
+
+                                 {{ form.date(class='form-control', type='hidden' ) }}
+
 
 
 
