@@ -1,9 +1,10 @@
+from datetime import datetime
+
 from flask import Flask, render_template, url_for, session,jsonify, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField
-
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
@@ -73,10 +74,27 @@ def handle_cart():
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
+    push_date = datetime.today().strftime('%Y-%m-%d')
+    if request.method == 'POST':
+        push_date = request.form['date']
+        return jsonify({'date': push_date})
+
+
     tables = Tables.query.all()
     count_cart = check_count()
+    orders_table = Order.query.all()
+    return render_template('index.html', tables=tables, push_date=push_date, count_cart=count_cart, orders_table=orders_table)
 
-    return render_template('index.html', tables=tables, count_cart=count_cart)
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    search = request.args.get('search')
+    if search:
+        orders_table = Order.query.filter(Order.date.contains(search))
+    else:
+        orders_table = Order.query.all()
+    return render_template('search.html', orders_table=orders_table, search=search)
+
 
 @app.route('/add-table', methods=['GET', 'POST'])
 def add_table():
@@ -181,6 +199,7 @@ def checkout():
 
 @app.route('/orders')
 def orders():
+
     orders = Order.query.all()
     return render_template('orders.html', orders=orders)
 
@@ -194,6 +213,7 @@ def del_order(id):
     order = Order.query.filter_by(id=id).first()
     db.session.delete(order)
     db.session.commit()
+
     return redirect(url_for('index'))
 
 
