@@ -1,18 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Корзина заказа{% endblock %}
+{% block title %}Заказ{% endblock %}
 {% block content %}
 <div class="row">
+<div class="col-lg-3">
 {% for item in order.items %}
-    <p>{{ item.table_id }}</p>
-    <p>{{ item.table.number_t }}</p>
-    <p>{{ item.table.quantity_chairs }}</p>
-    <p>{{ item.table.date }}</p>
-    <p>{{ item.table.with_tab }}</p>
-    <p>{{ item.table.height_tab }}</p>
-    <p>{{ item.table.margin_top }}</p>
-    <p>{{ item.table.margin_left }}</p>
-    <p>{{ item.table.so }}</p>
+     <h3>Стол №: {{ item.table.number_t }}</h3>
+    <h5>Количество мест: {{ item.table.quantity_chairs }}</h5>
+    <h5>Размер: {{ item.table.with_tab }} на {{ item.table.height_tab }} мерта</h5>
+    <h5>Форма стола: {% if item.table.so == 'square'%}Прямоугольный{% else %}Овальный{% endif %}</h5>
 {% endfor %}
+</div>
 </div>
 {% endblock %}
 
