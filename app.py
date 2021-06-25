@@ -1,16 +1,40 @@
 from datetime import datetime
 from flask import Flask, render_template, url_for, session,jsonify, request, redirect
+from flask_security import UserMixin, RoleMixin, SQLAlchemyUserDatastore, Security, login_required
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField
+import email_validator
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
 app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = 'mysecret'
+app.config['SECURITY_PASSWORD_SALT'] = 'salt'
+app.config['SECURITY_PASSWORD_HASH'] = 'sha512_crypt'
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+roles_users = db.Table('roles_users', db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
+                       db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
+                       )
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer(), primary_key=True)
+    email = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(255))
+    active = db.Column(db.Boolean())
+    roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
+
+class Role(db.Model, RoleMixin):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(100), unique=True)
+    description = db.Column(db.String(255))
+
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+security = Security(app, user_datastore)
+
 
 class Tables(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -84,6 +108,10 @@ def index():
     orders_table = Order.query.all()
     return render_template('index.html', tables=tables, push_date=push_date, count_cart=count_cart, orders_table=orders_table)
 
+@app.route('/admin')
+@login_required
+def admin():
+    return redirect('/')
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
@@ -96,6 +124,7 @@ def search():
 
 
 @app.route('/add-table', methods=['GET', 'POST'])
+@login_required
 def add_table():
     form = AddTables()
     if form.validate_on_submit():
@@ -113,6 +142,7 @@ def add_table():
     return render_template('add-table.html', form=form)
 
 @app.route('/edit_table/<int:id>', methods=['GET', 'POST'])
+@login_required
 def edit_table(id):
     table = Tables.query.get(id)
     if request.method == 'POST':
@@ -130,6 +160,7 @@ def edit_table(id):
     return render_template('edit-table.html', table=table)
 
 @app.route('/table/<int:id>', methods=['GET'])
+@login_required
 def delete_table(id):
     group = Tables.query.filter_by(id=id).first()
     db.session.delete(group)
@@ -197,17 +228,19 @@ def checkout():
     return render_template('checkout.html', form=form, count_cart=count_cart, tables=tables)
 
 @app.route('/orders')
+@login_required
 def orders():
-
     orders = Order.query.all()
     return render_template('orders.html', orders=orders)
 
 @app.route('/orders/<order_id>', methods=['GET', 'POST'])
+@login_required
 def order(order_id):
     order = Order.query.filter_by(id=int(order_id)).first()
     return render_template('order-view.html', order=order)
 
 @app.route('/orders/delete/<int:id>', methods=['GET', 'POST'])
+@login_required
 def del_order(id):
     order = Order.query.filter_by(id=id).first()
     db.session.delete(order)

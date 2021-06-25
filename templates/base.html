@@ -22,12 +22,27 @@
   <body>
 
     <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
-      <h5 class="my-0 mr-md-auto font-weight-normal"><a href="{{ url_for('index') }}">Hall layout</a></h5>
-      <nav class="my-2 my-md-0 mr-md-3">
-        <a class="btn btn-success m-3" href="{{ url_for('add_table') }}">Добавить столик</a>
 
+
+    <nav class="navbar navbar-light bg-light col-lg-12">
+          <h5 class="my-0 mr-md-auto font-weight-normal"><a href="{{ url_for('index') }}">Hall layout</a></h5>
+
+    {% if current_user.has_role('admin')%}
+        <a class="btn btn-success m-3" href="{{ url_for('add_table') }}"><i class="fas fa-plus"></i> Добавить столик</a>
+      <a class="btn btn-outline-primary m-3" href="{{ url_for('orders') }}"><i class="far fa-address-card"></i> Заказы столиков</a>
+        {% endif %}
+          {% if current_user.has_role('admin')%}
+              <ul class="nav navbar-nav navbar-right text-right">
+          <li>
+              <a class="btn btn-outline-primary m-3" href="/logout"><i class="fas fa-sign-out-alt"></i> Выйти</a>
+          </li>
+              </ul>
+              {% else %}
+              <div class="right">
+        <a class="btn btn-outline-primary m-3" href="{{ url_for('admin') }}"><i class="fas fa-user-lock"></i> Админка</a>
+          </div>
+          {% endif %}
       </nav>
-      <a class="btn btn-outline-primary m-3" href="{{ url_for('orders') }}">Заказы столиков</a>
     </div>
 
 

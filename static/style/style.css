@@ -12,4 +12,4 @@ border-radius: 100px/85px;
 .square, .oval{text-align: center;position: absolute; padding: 5px;}
 .box {border: solid 1px;position: relative;width: 1320px;
 height: 800px;background: repeat url("https://elfa93.ru/800/600/https/www.kaindl.com/fileadmin/_processed_/e/4/csm_34268_Verlegte_Flaeche_8e1f34d03c.jpg");}
-
+.right {text-align: right}
