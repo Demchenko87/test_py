@@ -8,7 +8,7 @@
             <tr>
                 <th>ID</th>
                 <th>Имя</th>
-                <th>Адрес</th>
+                <th>Стол</th>
                 <th>Email</th>
                 <th>Дата</th>
                 <th>Подробнее</th>
@@ -22,7 +22,7 @@
 
     <td>{{ order.id }}</td>
     <td>{{ order.name }}</td>
-    <td>{{ order.address }}</td>
+    <td>{{ order.tables }}</td>
     <td>{{ order.email }}</td>
     <td>{{ order.date }}</td>
     <td><a href="{{ url_for('order', order_id=order.id) }}">Подробнее</a></td>
@@ -36,7 +36,7 @@
             <tr>
                 <th>Заказ</th>
                 <th>Телефон</th>
-                <th>Адрес</th>
+                <th>Стол</th>
                 <th>Заказчик</th>
                 <th>Сумма</th>
                 <th>Статус</th>

@@ -4,8 +4,11 @@ from flask_security import UserMixin, RoleMixin, SQLAlchemyUserDatastore, Securi
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField
+from wtforms import StringField, SelectField, TextAreaField
 import email_validator
+import smtplib, ssl
+from flask_mail import Mail, Message
+
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
@@ -13,6 +16,14 @@ app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = 'mysecret'
 app.config['SECURITY_PASSWORD_SALT'] = 'salt'
 app.config['SECURITY_PASSWORD_HASH'] = 'sha512_crypt'
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_POST'] = 465
+# app.config['MAIL_ASCII_ATTACHMENTS'] = T
+app.config['MAIL_USERNAME'] = '' # Email
+app.config['MAIL_PASSWORD'] = '' # Password
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+mail = Mail(app)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -47,6 +58,7 @@ class Tables(db.Model):
     rotate = db.Column(db.Integer)
     so = db.Column(db.String(50), nullable=True)
     order = db.relationship('Order_Tables', backref='table', lazy=True)
+    datechek = db.Column(db.String(100), nullable=True)
 
 class AddTables(FlaskForm):
     number_t = StringField('number_t')
@@ -65,6 +77,7 @@ class Order(db.Model):
     address = db.Column(db.String(100))
     email = db.Column(db.String(50))
     date = db.Column(db.String(50))
+    tables = db.Column(db.String(50))
     items = db.relationship('Order_Tables', backref='order', lazy=True)
 
 class Order_Tables(db.Model):
@@ -79,6 +92,8 @@ class Checkout(FlaskForm):
     email = StringField('Email')
     date = StringField('Date')
     items = db.relationship('Order_Tables', backref='order', lazy=True)
+    tables = StringField('Tables')
+    table_numbers = TextAreaField('Table_numbers')
 
 def handle_cart():
     tables = []
@@ -97,16 +112,24 @@ def handle_cart():
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
+    tables = Tables.query.all()
     push_date = datetime.today().strftime('%Y-%m-%d')
+    datechek = push_date
+    orders = Order.query.all()
+
     # if request.method == 'POST':
     #     push_date = request.form['date']
     #     return jsonify({'date': push_date})
     if request.method == 'POST':
         push_date = request.form['date']
-    tables = Tables.query.all()
+
+        for i in tables:
+            i.datechek = push_date
+            db.session.commit()
+
     count_cart = check_count()
     orders_table = Order.query.all()
-    return render_template('index.html', tables=tables, push_date=push_date, count_cart=count_cart, orders_table=orders_table)
+    return render_template('index.html',orders=orders, tables=tables, push_date=push_date, count_cart=count_cart, orders_table=orders_table)
 
 @app.route('/admin')
 @login_required
@@ -224,8 +247,22 @@ def checkout():
         db.session.commit()
         session['cart'] = []
         session.modified = True
+
+        email = request.form['email']
+        name = request.form['name']
+        date = request.form['date']
+        table_numbers = request.form['table_numbers']
+
+        orders_message = str("Регистрация стола на имя: " + name + ' ' + "Дата: " + date + ' | ' + table_numbers)
+        message = Message(date, sender="conderroman@gmail.com", recipients=[email])
+        message.body = orders_message
+        mail.send(message)
+
+
         return redirect(url_for('index'))
     return render_template('checkout.html', form=form, count_cart=count_cart, tables=tables)
+
+
 
 @app.route('/orders')
 @login_required
@@ -246,7 +283,7 @@ def del_order(id):
     db.session.delete(order)
     db.session.commit()
 
-    return redirect(url_for('index'))
+    return redirect(url_for('orders'))
 
 
 if __name__ == '__main__':

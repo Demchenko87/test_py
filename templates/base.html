@@ -32,7 +32,7 @@
       <a class="btn btn-outline-primary m-3" href="{{ url_for('orders') }}"><i class="far fa-address-card"></i> Заказы столиков</a>
         {% endif %}
           {% if current_user.has_role('admin')%}
-              <ul class="nav navbar-nav navbar-right text-right">
+              <ul class="nav navbar-nav цnavbar-right text-right">
           <li>
               <a class="btn btn-outline-primary m-3" href="/logout"><i class="fas fa-sign-out-alt"></i> Выйти</a>
           </li>
@@ -75,6 +75,7 @@
 
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
         <script>
+
             document.getElementById('datePicker').valueAsDate = new Date();
             function pushDate(){
                 var input_date = document.querySelector('input');
@@ -92,7 +93,9 @@
         </script>
 
   <script>
-    $('.btn-buy').click(function () {
+
+
+    $('.btn-buy').click(function fn1() {
         var id = $(this).attr('id');
         var count = 1
             $.ajax({
@@ -105,7 +108,7 @@
             });
           $('.'+id ).hide();
     });
-    $('.btn-del').click(function () {
+    $('.btn-del').click(function fn2() {
         var id = $(this).attr('id');
         var count = 1
             $.ajax({

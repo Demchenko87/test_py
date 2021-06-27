@@ -11,18 +11,17 @@
                                  <label>Name</label>
                                  {{ form.name(class='form-control') }}
                               </div>
-                               <div class="form-group">
-                                 <label>address</label>
-                                 {{ form.address(class='form-control') }}
-                              </div>
+
                               <div class="form-group">
                                  <label>email</label>
                                  {{ form.email(class='form-control', type='email') }}
                               </div>
 
-                                 {{ form.date(class='form-control', type='hidden' ) }}
+                         <textarea name="tables">{% for tables in tables %}{{ tables['number_t'] }}{% endfor %}</textarea>
 
-
+                                 {{ form.date(class='form-control' ) }}
+{# type='hidden' {% for tables in tables %}<p>Стол номер: {{ tables['number_t'] }}</p>>{% endfor %}#}
+                            <textarea name="table_numbers">{% for tables in tables %} Стол номер: {{ tables['number_t'] }} {% endfor %}</textarea>
                          <div class="form-group mt-5">
                                        <button type="submit" class="btn btn-primary">
                                        <i class="glyphicon glyphicon-plus-sign"></i> Сохранить

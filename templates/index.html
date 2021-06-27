@@ -2,52 +2,52 @@
 {% block title %}Hall layout{% endblock %}
 {% block content %}
 
-
-<h1><span id="UpdateValue">{{ push_date }}</span></h1>
 <form method="POST" action="{{ url_for('index') }}">
-      <div class="form-group">
-            <input type="date" class="form-control" onchange="this.form.submit();" name="date" value="{{ push_date }}"/>
-       </div>
-   </form>
-
-<form method="POST" action="{{ url_for('checkout') }}">
-
-            <input type="hidden" onchange="pushDate()" name="date" value="{{ push_date }}"/>
-
-    <button class="btn btn-success" type="submit">Заказать кол. <span id="successAlert">{{ count_cart }}</span> </button>
+   <div class="form-group">
+      <input type="date" class="form-control" onchange="this.form.submit();" name="date" value="{{ push_date }}"/>
+   </div>
 </form>
-
+<form method="POST" action="{{ url_for('checkout') }}">
+   <input type="hidden" onchange="pushDate()" name="date" value="{{ push_date }}"/>
+   <button class="btn btn-success" type="submit">Заказать кол. <span id="successAlert">{{ count_cart }}</span> </button>
+</form>
 <h1>Зал 1</h1>
-    <div class="box">
-    {% for tables in tables %}
-    <div class="{{ tables.so }}" style="top: {{ tables.margin_top }}%; left:{{ tables.margin_left }}%; transform: rotate({{ tables.rotate }}deg);">
-        <h5>№ {{ tables.number_t }}</h5>
-        <p>мест: {{ tables.quantity_chairs }}</p>
-                {% for item in tables.order %}
-                     {% if item.order.date == push_date %}
-                        <p class="btn-danger" >БРОНЬ :{{ item.order.date }}</p>
-                         {% elif item.order.date %}
-<p class="btn-danger" >СВОБОДЕН</p>
-                     {% endif %}
+<div class="box">
+   {% for tables in tables %}
+   <div class="{{ tables.so }}" style="top: {{ tables.margin_top }}%; left:{{ tables.margin_left }}%; transform: rotate({{ tables.rotate }}deg);">
+      <h5>№ {{ tables.number_t }}</h5>
+      <p>мест: {{ tables.quantity_chairs }}</p>
 
-                 {% endfor %}
-
-         <p>размер стола: {{ tables.with_tab }} на {{ tables.height_tab }} метра</p>
-        <a href="{{ url_for('delete_table', id=tables.id) }}" title="Удалить" class="btn btn-danger">
-        <i class="fas fa-trash-alt"></i></a>
-        <a href="{{ url_for('edit_table', id=tables.id) }}" title="Редактировать" class="btn btn-warging"><i class="fas fa-edit"></i></a>
-<span class="{{ tables.id}}">
-    <button class="btn btn-success btn-buy" id="{{ tables.id }}">Заказать</button>
-</span>
-    <button class="btn btn-success btn-del" id="{{ tables.id }}">Отменить</button>
+      {% for item in tables.order %}
+          {% if item.order.date == push_date %}
+          <p class="btn-danger" ><span id="status{{ tables.id }}">БРОНЬ: </span>{{ item.order.date }}</p>
+              {% elif item.order.date == '' %}
+          {% endif %}
+      {% endfor %}
 
 
-    </div>
-        {% endfor %}
+      <p>размер стола: {{ tables.with_tab }} на {{ tables.height_tab }} метра</p>
+      {% if current_user.has_role('admin')%}  <a href="{{ url_for('delete_table', id=tables.id) }}" title="Удалить" class="btn btn-danger">
+      <i class="fas fa-trash-alt"></i></a>
+      <a href="{{ url_for('edit_table', id=tables.id) }}" title="Редактировать" class="btn btn-warging"><i class="fas fa-edit"></i></a>
+      {% endif %}
 
 
+      <span id="visible{{ tables.id}}">
+          <button class="btn btn-success btn-buy" id="{{ tables.id }}">Заказать</button>
+           <button class="btn btn-success btn-del" id="{{ tables.id }}">Отменить</button>
+       </span>
 
-    </div>
+       <script>
+            status =  document.getElementById('status{{ tables.id }}').innerHTML
+                if (status == 'БРОНЬ: '){
+                var SummDok = document.getElementById('visible{{ tables.id }}').style.display = 'none';
+               }
+       </script>
+
+   </div>
+   {% endfor %}
+
+</div>
 {% endblock %}
-
 
