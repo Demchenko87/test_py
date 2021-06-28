@@ -4,8 +4,8 @@
 <div class="row">
 
    {% for tables in tables %}
-       <p>{{ tables['id'] }}</p>
-{% endfor %}
+       <p>{{ tables['number_t'] }}</p>
+    {% endfor %}
 {% if session['cart'] == [] %} {% else %}
                  <a href="{{ url_for('checkout') }}" class="btn btn-primary btn-sm">
 					Оформить заказ <i class="glyphicon glyphicon-chevron-right"></i>

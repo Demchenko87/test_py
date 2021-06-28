@@ -91,11 +91,8 @@
                 });
             }
         </script>
-
   <script>
-
-
-    $('.btn-buy').click(function fn1() {
+$('.btn-buy').click(function() {
         var id = $(this).attr('id');
         var count = 1
             $.ajax({
@@ -104,11 +101,13 @@
             data: {id_tov: id},
             success: function(data) {
                 $('#successAlert').text(data.count).show();
+
                 }
             });
-          $('.'+id ).hide();
-    });
-    $('.btn-del').click(function fn2() {
+    }
+
+    );
+    $('.btn-del').click(function () {
         var id = $(this).attr('id');
         var count = 1
             $.ajax({
@@ -119,7 +118,6 @@
                 $('#successAlert').text(data.count).show();
                 }
             });
-        $('.'+id ).show();
     });
 </script>
 <script>

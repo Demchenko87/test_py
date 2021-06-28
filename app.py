@@ -12,13 +12,13 @@ from flask_mail import Mail, Message
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = 'mysecret'
 app.config['SECURITY_PASSWORD_SALT'] = 'salt'
 app.config['SECURITY_PASSWORD_HASH'] = 'sha512_crypt'
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_POST'] = 465
-# app.config['MAIL_ASCII_ATTACHMENTS'] = T
 app.config['MAIL_USERNAME'] = '' # Email
 app.config['MAIL_PASSWORD'] = '' # Password
 app.config['MAIL_USE_TLS'] = True
@@ -108,6 +108,7 @@ def handle_cart():
                        'rotate': table.rotate,
                        'so': table.so,
                        })
+
     return tables
 
 @app.route('/', methods=['POST', 'GET'])
@@ -116,7 +117,7 @@ def index():
     push_date = datetime.today().strftime('%Y-%m-%d')
     datechek = push_date
     orders = Order.query.all()
-
+    # session['cart'] = []
     # if request.method == 'POST':
     #     push_date = request.form['date']
     #     return jsonify({'date': push_date})
@@ -220,22 +221,15 @@ def cart():
     tables = handle_cart()
     return render_template('cart.html', tables=tables, count_cart=count_cart)
 
-def check_count():
-    count_cart = 0
-    if 'cart' in session:
-        for item in session['cart']:
-            quantity = int(item['quantity'])
-            count_cart += quantity
-    else:
-        count_cart = 0
-    return count_cart
 
 
-@app.route('/checkout', methods=['GET', 'POST'])
+
+@app.route('/checkout', methods=['POST'])
 def checkout():
+    count_cart = check_count()
     tables = handle_cart()
     form = Checkout()
-    count_cart = check_count()
+
     if form.validate_on_submit():
         order = Order()
         form.populate_obj(order)
@@ -285,6 +279,14 @@ def del_order(id):
 
     return redirect(url_for('orders'))
 
-
+def check_count():
+    count_cart = 0
+    if 'cart' in session:
+        for item in session['cart']:
+            quantity = int(item['quantity'])
+            count_cart += quantity
+    else:
+        count_cart = 0
+    return count_cart
 if __name__ == '__main__':
     app.run()
