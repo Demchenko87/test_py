@@ -19,8 +19,8 @@
 
 <div class="box">
    {% for tables in tables %}
-
-   <div class="{{ tables.so }}"  id="{{ tables.id }}" style="top: {{ tables.margin_top }}%; left:{{ tables.margin_left }}%; transform: rotate({{ tables.rotate }}deg);">
+<span id="bue{{ tables.id }}" onclick="Fun{{ tables.id }}()">
+<div class="{{ tables.so }} btn-buy" id="{{ tables.id }}" style="top: {{ tables.margin_top }}%; left:{{ tables.margin_left }}%; transform: rotate({{ tables.rotate }}deg);">
 
        <h5 class="card-title">№ {{ tables.number_t }}</h5>
       <p class="card-text">кол. мест: {{ tables.quantity_chairs }}</p>
@@ -37,29 +37,58 @@
       <i class="fas fa-trash-alt"></i></a>
       <a href="{{ url_for('edit_table', id=tables.id) }}" title="Редактировать" class="btn btn-warging"><i class="fas fa-edit"></i></a>
       {% endif %}
-   <span id="chek{{ tables.id }}">
-        <div class="btn-buy btn btn-success" id="{{ tables.id }}">Заказать</div>
-        <div class="btn-del btn btn-danger" id="{{ tables.id }}">Отменить</div>
-       </span>
+{#        <span id="chek{{ tables.id }}">#}
+{#        <div class="btn-buy btn btn-success" id="{{ tables.id }}">Заказать</div>#}
+{#        <div class="btn-del btn btn-danger" id="{{ tables.id }}">Отменить</div>#}
+{#       </span>#}
    </div>
+</span>
+<span id="del{{ tables.id }}" onclick="Fun{{ tables.id }}()" hidden>
+<div class="{{ tables.so }} btn-del" id="{{ tables.id }}" style="top: {{ tables.margin_top }}%; left:{{ tables.margin_left }}%; transform: rotate({{ tables.rotate }}deg); opacity: 0.7;">
 
+       <h5 class="card-title">№ {{ tables.number_t }}</h5>
+      <p class="card-text">кол. мест: {{ tables.quantity_chairs }}</p>
+
+      {% for item in tables.order %}
+          {% if item.order.date == push_date %}
+              <img src="{{ url_for('static', filename='image/res.png') }}" alt="reserved" width="120">
+          <p class="btn-danger " hidden><span id="status{{ tables.id }}">БРОНЬ: </span>{{ item.order.date }}</p>
+
+          {% endif %}
+      {% endfor %}
+      <p>размер стола: {{ tables.with_tab }} на {{ tables.height_tab }} метра</p>
+      {% if current_user.has_role('admin')%}  <a href="{{ url_for('delete_table', id=tables.id) }}" title="Удалить" class="btn btn-danger">
+      <i class="fas fa-trash-alt"></i></a>
+      <a href="{{ url_for('edit_table', id=tables.id) }}" title="Редактировать" class="btn btn-warging"><i class="fas fa-edit"></i></a>
+      {% endif %}
+
+   </div>
+</span>
 
 
  <script>
 
-            {#function myFun{{ tables.id }}(){#}
-            {#    var element = document.getElementById('{{ tables.id }}')#}
-            {#    var element_del = document.getElementById('visible{{ tables.id }}')#}
-            {#        element.classList.add('hidden');#}
-            {#        element_del.classList.remove('hidden');#}
-            {#     #}
+                function Fun{{ tables.id }}() {
+                    var bue{{ tables.id }} = document.getElementById("bue{{ tables.id }}");
+                    var del{{ tables.id }} = document.getElementById("del{{ tables.id }}");
 
+                    if (bue{{ tables.id }}.hidden == true)
+                    {
 
+                        bue{{ tables.id }}.removeAttribute("hidden");
+                        del{{ tables.id }}.setAttribute("hidden", true);
+                    }
+                    else {
+                        bue{{ tables.id }}.setAttribute("hidden", true);
+                        del{{ tables.id }}.removeAttribute("hidden");
+                    }
+                }
 
 
             var status =  document.getElementById('status{{ tables.id }}').innerHTML
 
                 if (status == 'БРОНЬ: '){
+                document.getElementById('bue{{ tables.id }}').removeAttribute("onclick");
                 document.getElementById('{{ tables.id }}').classList.remove('btn-buy');
                 document.getElementById('{{ tables.id }}').classList.remove('btn-del');
                 document.getElementById('{{ tables.id }}').classList.add('glow');
