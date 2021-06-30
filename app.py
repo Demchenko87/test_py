@@ -118,12 +118,9 @@ def index():
     datechek = push_date
     orders = Order.query.all()
     # session['cart'] = []
-    # if request.method == 'POST':
-    #     push_date = request.form['date']
-    #     return jsonify({'date': push_date})
+
     if request.method == 'POST':
         push_date = request.form['date']
-
         for i in tables:
             i.datechek = push_date
             db.session.commit()
